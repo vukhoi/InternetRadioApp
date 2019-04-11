@@ -2,7 +2,7 @@ package com.example.internetradioapp.presenter;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,19 +14,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.internetradioapp.R;
 import com.example.internetradioapp.model.Channel;
 import com.example.internetradioapp.model.ChannelRepository;
 import com.example.internetradioapp.model.RetrofitHelper;
+import com.example.internetradioapp.view.MainActivity;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
 public class ChannelListFragmentPresenter {
-    Application application;
     Context context;
 
     public ChannelListFragmentPresenter(Context context) {
@@ -35,21 +34,52 @@ public class ChannelListFragmentPresenter {
 
 
     public void populateRecyclerView(RecyclerView recyclerView) {
-        ChannelRepository channelRepo = new ChannelRepository((Application) (context.getApplicationContext()));
-        loadChannelRepo(channelRepo);
-        List<Channel> channelList = channelRepo.getAllChannels();
+        new SetUpChannelRepoAsyncTask(context, recyclerView).execute();
+    }
 
-        // set up recycler view
+    private void setUpRecyclerView(List<Channel> channelList, RecyclerView recyclerView){
         CustomAdapter customAdapter = new CustomAdapter(context, channelList);
         recyclerView.setAdapter(customAdapter);
         LinearLayoutManager llManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(llManager);
+    }
+
+    private class SetUpChannelRepoAsyncTask extends AsyncTask<Void, Void, List<Channel>> {
+        private Context context;
+        private RecyclerView recyclerView;
+
+        SetUpChannelRepoAsyncTask(Context context, RecyclerView recyclerView){
+            this.context = context;
+            this.recyclerView = recyclerView;
+        }
+
+        @Override
+        protected List<Channel> doInBackground(Void... voids) {
+            ChannelRepository channelRepo = new ChannelRepository((Application) (context.getApplicationContext()));
+            loadChannelRepo(channelRepo);
+            List<Channel> channelList = channelRepo.getAllChannels();
+            return channelList;
+        }
+
+        @Override
+        protected void onPostExecute(List<Channel> channelList) {
+            Log.d("post execute", " list size = " + channelList.size());
+            super.onPostExecute(channelList);
+            setUpRecyclerView(channelList, recyclerView);
+        }
+
 
     }
 
+
     private void loadChannelRepo(ChannelRepository channelRepo) {
         RetrofitHelper retrofitHelper = new RetrofitHelper(channelRepo);
-        retrofitHelper.makeRetrofitCall();
+        if (MainActivity.INTERNET_AVAILABLE) {
+            retrofitHelper.makeRetrofitCall();
+        }
+        else{
+            Toast.makeText(context,"Internet Access Permission Denied", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
