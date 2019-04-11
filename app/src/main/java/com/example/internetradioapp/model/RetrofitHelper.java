@@ -53,7 +53,7 @@ public class RetrofitHelper {
 
 
     private void initializeRetrofit() {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://movies-sample.herokuapp.com/").addConverterFactory(GsonConverterFactory.create()).build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://raw.githubusercontent.com/").addConverterFactory(GsonConverterFactory.create()).build();
 
         this.radioChannelApi = retrofit.create(RadioChannelApi.class);
     }

@@ -3,6 +3,7 @@
 package com.example.internetradioapp.model;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 
 import java.util.List;
@@ -36,7 +37,12 @@ public class ChannelRepository {
 
         @Override
         protected Void doInBackground(final Channel... params) {
-            mAsyncTaskDao.insert(params[0]);
+            try {
+                mAsyncTaskDao.insert(params[0]);
+            }
+            catch (SQLiteConstraintException e){
+                e.printStackTrace();
+            }
             return null;
         }
     }
