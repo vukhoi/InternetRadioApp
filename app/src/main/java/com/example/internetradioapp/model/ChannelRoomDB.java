@@ -7,7 +7,7 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
-@Database(entities = {Channel.class}, version = 1)
+@Database(entities = {Channel.class}, version = 2)
 public abstract class ChannelRoomDB extends RoomDatabase {
 
     public abstract ChannelDAO channelDAO();

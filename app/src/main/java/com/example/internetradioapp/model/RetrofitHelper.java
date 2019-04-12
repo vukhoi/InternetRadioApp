@@ -2,8 +2,10 @@
 
 package com.example.internetradioapp.model;
 
-import android.app.Application;
 import android.util.Log;
+
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,14 +41,26 @@ public class RetrofitHelper {
 
     private void saveResponseToDb(Response<ChannelList> response, ChannelRepository channelRepo){
         for (ChannelAPIObj channelAPIObj: response.body().getChannels()){
+            List<Playlist> playList = channelAPIObj.getPlaylists();
+            String previewUrl = null;
+
+            for(Playlist playlist: playList){
+                if (playlist.getFormat().equals("mp3")){
+                    previewUrl = playlist.getUrl();
+                    break;
+                }
+            }
+
+
             channelRepo.insert(new Channel(channelAPIObj.getTitle(),
                     channelAPIObj.getDescription(),
                     channelAPIObj.getDj(),
                     channelAPIObj.getImage(),
-                    channelAPIObj.getLargeimage(),
+                    channelAPIObj.getXlimage(),
                     channelAPIObj.getDjmail(),
                     channelAPIObj.getListeners(),
-                    channelAPIObj.getGenre()));
+                    channelAPIObj.getGenre(),
+                    previewUrl));
         }
     }
 

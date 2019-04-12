@@ -1,34 +1,112 @@
 package com.example.internetradioapp.view;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.MediaController;
+import android.widget.TextView;
 
 import com.example.internetradioapp.R;
+import com.example.internetradioapp.presenter.ChannelListFragmentPresenter;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 
 public class ChannelDetailFragment extends Fragment {
 
+    View view;
+    TextView tvTitle, tvDj, tvDescription, tvDjEmail, tvListeners, tvGenre;
+    ImageView ivThumbnail;
+    Button btnPlay;
+    Bundle bundle;
 
     public ChannelDetailFragment() {
-        // Required empty public constructor
+
     }
 
-
-    public static ChannelDetailFragment newInstance() {
-        ChannelDetailFragment fragment = new ChannelDetailFragment();;
-        return fragment;
-    }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_channel_detail, container, false);
+        view = inflater.inflate(R.layout.fragment_channel_detail, container, false);
+
+        setUpViews();
+
+        return view;
     }
 
+    private void setUpViews() {
+        tvTitle = view.findViewById(R.id.tv_title);
+        tvDj = view.findViewById(R.id.tv_dj);
+        tvDescription = view.findViewById(R.id.tv_description);
+        tvDjEmail = view.findViewById(R.id.tv_dj_email);
+        tvListeners = view.findViewById(R.id.tv_listeners);
+        tvGenre = view.findViewById(R.id.tv_genre);
+        ivThumbnail = view.findViewById(R.id.iv_channel_thumbnail);
+        btnPlay = view.findViewById(R.id.btn_play);
 
+
+        bundle = this.getArguments();
+
+        tvTitle.setText(bundle.getString("title"));
+        tvDj.setText(bundle.getString("dj"));
+        tvDescription.setText(bundle.getString("description"));
+        tvDjEmail.setText(bundle.getString("djEmail"));
+        tvListeners.setText(bundle.getString("listeners"));
+        tvGenre.setText(bundle.getString("genre"));
+        Picasso.get().load(bundle.getString("thumbnailUrlLarge")).into(ivThumbnail);
+
+        final MediaPlayer mediaPlayer = setUpMediaPlayer();
+
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+
+                   @Override
+                   public void onClick(View view) {
+                       if (mediaPlayer.isPlaying()){
+                           mediaPlayer.stop();
+                       }
+                       else {
+                            startMediaPlayer(mediaPlayer);
+                       }
+                   }
+               }
+               );
+
+    }
+
+    private void startMediaPlayer(MediaPlayer mediaPlayer){
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+            }
+        });
+    }
+
+    private MediaPlayer setUpMediaPlayer() {
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            Log.d("media player", bundle.getString("previewUrl"));
+            mediaPlayer.setDataSource(getContext().getApplicationContext(),
+                    Uri.parse(bundle.getString("previewUrl")));
+            mediaPlayer.prepareAsync();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return mediaPlayer;
+    }
 }

@@ -36,6 +36,9 @@ public class Channel {
     @ColumnInfo(name = "genre")
     private String genre;
 
+    @ColumnInfo(name = "preview_url")
+    private String previewUrl;
+
     public Channel(String title,
                    String description,
                    String dj,
@@ -43,7 +46,8 @@ public class Channel {
                    String thumbnailUrlLarge,
                    String djEmail,
                    String listeners,
-                   String genre) {
+                   String genre,
+                   String previewUrl) {
         this.title = title;
         this.description = description;
         this.dj = dj;
@@ -52,6 +56,7 @@ public class Channel {
         this.djEmail = djEmail;
         this.listeners = listeners;
         this.genre = genre;
+        this.previewUrl = previewUrl;
     }
 
     public String getTitle() {
@@ -116,5 +121,14 @@ public class Channel {
 
     public void setGenre(String genre) {
         this.genre = genre;
+    }
+
+
+    public String getPreviewUrl() {
+        return previewUrl;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
     }
 }

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1b64cf61abe980c5e8c1aee73e39942a",
+    "identityHash": "42ddc9e58ec3b15e2bb937e8cb73ab18",
     "entities": [
       {
         "tableName": "channel_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `description` TEXT NOT NULL, `dj` TEXT NOT NULL, `thumbnail_url_small` TEXT NOT NULL, `thumbnail_url_large` TEXT NOT NULL, `dj_email` TEXT NOT NULL, `number_of_listeners` TEXT NOT NULL, `genre` TEXT NOT NULL, PRIMARY KEY(`title`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `description` TEXT NOT NULL, `dj` TEXT NOT NULL, `thumbnail_url_small` TEXT NOT NULL, `thumbnail_url_large` TEXT NOT NULL, `dj_email` TEXT NOT NULL, `number_of_listeners` TEXT NOT NULL, `genre` TEXT NOT NULL, `preview_url` TEXT, PRIMARY KEY(`title`))",
         "fields": [
           {
             "fieldPath": "title",
@@ -55,6 +55,12 @@
             "columnName": "genre",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "previewUrl",
+            "columnName": "preview_url",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -69,7 +75,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"1b64cf61abe980c5e8c1aee73e39942a\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"42ddc9e58ec3b15e2bb937e8cb73ab18\")"
     ]
   }
 }

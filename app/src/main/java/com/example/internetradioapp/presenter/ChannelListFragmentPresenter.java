@@ -1,30 +1,30 @@
 package com.example.internetradioapp.presenter;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.internetradioapp.R;
 import com.example.internetradioapp.model.Channel;
-import com.example.internetradioapp.model.ChannelList;
 import com.example.internetradioapp.model.ChannelRepository;
 import com.example.internetradioapp.model.DbRepoContainer;
 import com.example.internetradioapp.model.RetrofitHelper;
+import com.example.internetradioapp.view.ChannelDetailFragment;
 import com.example.internetradioapp.view.ChannelListFragment;
 import com.example.internetradioapp.view.MainActivity;
 import com.squareup.picasso.Picasso;
@@ -113,8 +113,6 @@ public class ChannelListFragmentPresenter {
             ChannelListFragmentPresenter.this.channelList = channelList;
             setUpRecyclerView(channelList, recyclerView);
         }
-
-
     }
 
     private void loadChannelRepo(ChannelRepository channelRepo) {
@@ -150,13 +148,16 @@ public class ChannelListFragmentPresenter {
 
         @Override
         public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
-            Channel channel = channelList.get(position);
+            final Channel channel = channelList.get(position);
             holder.clChannel.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        // todo activity function : remove this fragment, add ChannelDetailFragment
-                                                    }
-                                                }
+                    @Override
+                    public void onClick(View view) {
+                        Bundle bundle = ChannelListFragment.createChannelBundle(channel);
+                        Fragment fragment = new ChannelDetailFragment();
+                        fragment.setArguments(bundle);
+                        ((MainActivity)context).addFragment(true, fragment);
+                    }
+                }
             );
             Picasso.get().load(channel.getThumbnailUrlSmall()).into(holder.ivChannelThumbnail);
             holder.tvTitle.setText(channel.getTitle());

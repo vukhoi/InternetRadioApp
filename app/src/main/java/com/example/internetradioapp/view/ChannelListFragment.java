@@ -8,7 +8,6 @@ import android.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.example.internetradioapp.R;
 import com.example.internetradioapp.model.Channel;
 import com.example.internetradioapp.presenter.ChannelListFragmentPresenter;
@@ -32,7 +31,7 @@ public class ChannelListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_channel_list);
         searchView = view.findViewById(R.id.search_view);
 
-        presenter = new ChannelListFragmentPresenter(getContext());
+        presenter = new ChannelListFragmentPresenter(this.getContext());
         presenter.populateRecyclerView(recyclerView);
 
         setUpSearchView(searchView);
@@ -46,7 +45,7 @@ public class ChannelListFragment extends Fragment {
             public boolean onQueryTextSubmit(String s) {
                 Channel searchResult = presenter.searchChannel(s);
                 if (searchResult != null){
-                    // todo replace with ChannelDetailFragment
+                    addChannelDetailFragment(searchResult);
                 }
                 return false;
             }
@@ -57,5 +56,25 @@ public class ChannelListFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    public void addChannelDetailFragment(Channel searchResult) {
+        Fragment fragment = new ChannelDetailFragment();
+        Bundle bundle = createChannelBundle(searchResult);
+        fragment.setArguments(bundle);
+        ((MainActivity)getActivity()).addFragment(true, fragment);
+    }
+
+    public static Bundle createChannelBundle(Channel searchResult) {
+        Bundle bundle = new Bundle();
+        bundle.putString("title", searchResult.getTitle());
+        bundle.putString("dj", searchResult.getDj());
+        bundle.putString("description", searchResult.getDescription());
+        bundle.putString("djEmail", searchResult.getDjEmail());
+        bundle.putString("listeners", searchResult.getListeners());
+        bundle.putString("genre", searchResult.getGenre());
+        bundle.putString("thumbnailUrlLarge", searchResult.getThumbnailUrlLarge());
+        bundle.putString("previewUrl", searchResult.getPreviewUrl());
+        return bundle;
     }
 }
