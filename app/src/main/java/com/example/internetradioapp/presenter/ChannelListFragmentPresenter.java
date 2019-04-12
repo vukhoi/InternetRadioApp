@@ -2,6 +2,7 @@ package com.example.internetradioapp.presenter;
 
 import android.app.Application;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,27 +12,46 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.internetradioapp.R;
 import com.example.internetradioapp.model.Channel;
+import com.example.internetradioapp.model.ChannelList;
 import com.example.internetradioapp.model.ChannelRepository;
+import com.example.internetradioapp.model.DbRepoContainer;
 import com.example.internetradioapp.model.RetrofitHelper;
+import com.example.internetradioapp.view.ChannelListFragment;
 import com.example.internetradioapp.view.MainActivity;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChannelListFragmentPresenter {
     Context context;
 
+    // for quick access
+    List<Channel> channelList;
+
     public ChannelListFragmentPresenter(Context context) {
         this.context = context;
+
     }
 
+    public Channel searchChannel(String s){
+        List<Channel> matchingChannel = getMatchingChannel(s);
+        if (matchingChannel.size() == 1){
+            if (matchingChannel.get(0).getTitle().toLowerCase().equals(s.toLowerCase())){ // exact match ignore case
+                return matchingChannel.get(0);
+            }
+        }
+        return null;
+    }
 
     public void populateRecyclerView(RecyclerView recyclerView) {
         new SetUpChannelRepoAsyncTask(context, recyclerView).execute();
@@ -42,6 +62,29 @@ public class ChannelListFragmentPresenter {
         recyclerView.setAdapter(customAdapter);
         LinearLayoutManager llManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(llManager);
+        for (Channel channel: channelList){
+            Log.d(channel.getDj(), channel.getThumbnailUrlSmall());
+        }
+    }
+
+
+
+    public void editRecyclerView(String s, RecyclerView recyclerView) {
+        List<Channel> matchingChannel = getMatchingChannel(s);
+        setUpRecyclerView(matchingChannel, recyclerView);
+    }
+
+
+    // if dj or title has substring then match
+    private List<Channel> getMatchingChannel(String s){
+        List<Channel> matchingChannel = new ArrayList<Channel>();
+        for (Channel channel : channelList){
+            if (channel.getTitle().toLowerCase().contains(s.toLowerCase()) ||
+                    channel.getDj().toLowerCase().contains(s.toLowerCase())){
+                matchingChannel.add(channel);
+            }
+        }
+        return matchingChannel;
     }
 
     private class SetUpChannelRepoAsyncTask extends AsyncTask<Void, Void, List<Channel>> {
@@ -55,9 +98,11 @@ public class ChannelListFragmentPresenter {
 
         @Override
         protected List<Channel> doInBackground(Void... voids) {
-            ChannelRepository channelRepo = new ChannelRepository((Application) (context.getApplicationContext()));
-            loadChannelRepo(channelRepo);
-            List<Channel> channelList = channelRepo.getAllChannels();
+            if (DbRepoContainer.channelRepository == null) {
+                DbRepoContainer.channelRepository = new ChannelRepository((Application) (context.getApplicationContext()));
+                loadChannelRepo(DbRepoContainer.channelRepository);
+            }
+            List<Channel> channelList = DbRepoContainer.channelRepository.getAllChannels();
             return channelList;
         }
 
@@ -65,12 +110,12 @@ public class ChannelListFragmentPresenter {
         protected void onPostExecute(List<Channel> channelList) {
             Log.d("post execute", " list size = " + channelList.size());
             super.onPostExecute(channelList);
+            ChannelListFragmentPresenter.this.channelList = channelList;
             setUpRecyclerView(channelList, recyclerView);
         }
 
 
     }
-
 
     private void loadChannelRepo(ChannelRepository channelRepo) {
         RetrofitHelper retrofitHelper = new RetrofitHelper(channelRepo);
@@ -82,8 +127,7 @@ public class ChannelListFragmentPresenter {
         }
     }
 
-
-    class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
+    private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
         private List<Channel> channelList;
         private Context context;
 
