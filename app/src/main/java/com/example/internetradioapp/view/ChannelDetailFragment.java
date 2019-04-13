@@ -1,5 +1,6 @@
 package com.example.internetradioapp.view;
 
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -69,19 +70,22 @@ public class ChannelDetailFragment extends Fragment {
 
         final MediaPlayer mediaPlayer = setUpMediaPlayer();
 
-        btnPlay.setOnClickListener(new View.OnClickListener() {
-
-                   @Override
-                   public void onClick(View view) {
-                       if (mediaPlayer.isPlaying()){
-                           mediaPlayer.stop();
-                       }
-                       else {
-                            startMediaPlayer(mediaPlayer);
-                       }
-                   }
-               }
-               );
+//        btnPlay.setOnClickListener(new View.OnClickListener() {
+//
+//                   @Override
+//                   public void onClick(View view) {
+////                       Intent intent = new Intent(Intent.ACTION_VIEW);
+////                       intent.setDataAndType(Uri.parse(bundle.getString("previewUrl")), "audio/*");
+////                       startActivity(intent);
+//                       if (mediaPlayer.isPlaying()){
+//                           mediaPlayer.stop();
+//                       }
+//                       else {
+//                            startMediaPlayer(mediaPlayer);
+//                       }
+//                   }
+//               }
+//               );
 
     }
 
@@ -99,7 +103,8 @@ public class ChannelDetailFragment extends Fragment {
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             Log.d("media player", bundle.getString("previewUrl"));
-            mediaPlayer.setDataSource(getContext().getApplicationContext(),
+            mediaPlayer.setDataSource(getActivity().getApplicationContext()
+                    /*getContext().getApplicationContext()*/,
                     Uri.parse(bundle.getString("previewUrl")));
             mediaPlayer.prepareAsync();
 
