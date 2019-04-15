@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         checkInternetPermission();
 
-        addFragment(false, new ChannelListFragment());
+        addFragment(true, new ChannelListFragment());
 
     }
 
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         if (popBackStack) {
             fragmentManager.popBackStackImmediate();
         }
-        fragmentTransaction.add(R.id.ll_fragment_placeholder, fragment).
+        fragmentTransaction.replace(R.id.ll_fragment_placeholder, fragment).
                 addToBackStack(null).
                 commit();
 

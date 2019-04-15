@@ -62,7 +62,7 @@ public class ChannelListFragment extends Fragment {
         Fragment fragment = new ChannelDetailFragment();
         Bundle bundle = createChannelBundle(searchResult);
         fragment.setArguments(bundle);
-        ((MainActivity)getActivity()).addFragment(true, fragment);
+        ((MainActivity)getActivity()).addFragment(false, fragment);
     }
 
     public static Bundle createChannelBundle(Channel searchResult) {

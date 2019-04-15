@@ -12,15 +12,27 @@ public class ChannelRepository {
 
     private ChannelDAO channelDAO;
     private List<Channel> allChannels;
+    private static ChannelRepository INSTANCE;
 
-    public ChannelRepository(Application application){
+    private ChannelRepository(Application application){
         ChannelRoomDB db =ChannelRoomDB.getDatabase(application);
         channelDAO = db.channelDAO();
         allChannels = channelDAO.getAllWords(); // potentially take a while, so may want to use async task
     }
 
+    public static ChannelRepository getINSTANCE(Application application){
+        if (INSTANCE == null){
+            synchronized (ChannelRepository.class){
+                if (INSTANCE == null){
+                    INSTANCE = new ChannelRepository(application);
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
     public List<Channel> getAllChannels(){
-        return allChannels;
+        return INSTANCE.allChannels;
     }
 
     public void insert (Channel channel) {

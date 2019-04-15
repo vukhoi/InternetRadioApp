@@ -1,22 +1,21 @@
 package com.example.internetradioapp.view;
 
-import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.example.internetradioapp.R;
-import com.example.internetradioapp.presenter.ChannelListFragmentPresenter;
+import com.example.internetradioapp.model.ChannelRepository;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -44,6 +43,8 @@ public class ChannelDetailFragment extends Fragment {
 
         setUpViews();
 
+        Log.d(this.getClass().getSimpleName(), "set up key listener");
+
         return view;
     }
 
@@ -68,12 +69,11 @@ public class ChannelDetailFragment extends Fragment {
         tvGenre.setText(bundle.getString("genre"));
         Picasso.get().load(bundle.getString("thumbnailUrlLarge")).into(ivThumbnail);
 
-        final MediaPlayer mediaPlayer = setUpMediaPlayer();
+//        final MediaPlayer mediaPlayer = setUpMediaPlayer();
+        btnPlay.setOnClickListener(new View.OnClickListener() {
 
-//        btnPlay.setOnClickListener(new View.OnClickListener() {
-//
-//                   @Override
-//                   public void onClick(View view) {
+                   @Override
+                   public void onClick(View view) {
 ////                       Intent intent = new Intent(Intent.ACTION_VIEW);
 ////                       intent.setDataAndType(Uri.parse(bundle.getString("previewUrl")), "audio/*");
 ////                       startActivity(intent);
@@ -83,9 +83,9 @@ public class ChannelDetailFragment extends Fragment {
 //                       else {
 //                            startMediaPlayer(mediaPlayer);
 //                       }
-//                   }
-//               }
-//               );
+                       Toast.makeText(getContext(), "couldn't set up opening streaming file", Toast.LENGTH_SHORT).show();
+                   }
+               });
 
     }
 
@@ -114,4 +114,5 @@ public class ChannelDetailFragment extends Fragment {
 
         return mediaPlayer;
     }
+
 }
