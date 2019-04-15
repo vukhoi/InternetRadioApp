@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (popBackStack) {
             fragmentManager.popBackStackImmediate();
         }
-        fragmentTransaction.replace(R.id.ll_fragment_placeholder, fragment).
+        fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_top,R.anim.enter_from_left, R.anim.exit_to_right).
+                replace(R.id.ll_fragment_placeholder, fragment).
                 addToBackStack(null).
                 commit();
 
