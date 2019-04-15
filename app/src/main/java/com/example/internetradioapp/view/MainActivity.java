@@ -15,7 +15,7 @@ import com.example.internetradioapp.R;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityInterface {
 
     private static int INTERNET_PERMISSION_REQUESTCODE;
     public static boolean INTERNET_AVAILABLE = false;
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
     public void addFragment(boolean popBackStack, Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -46,12 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void randomizeRequestCode() {
-        Random random = new Random();
-        INTERNET_PERMISSION_REQUESTCODE = random.nextInt(random.nextInt(1000));
-    }
-
-    private void checkInternetPermission() {
+    @Override
+    public void checkInternetPermission() {
         // check permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, MainActivity.INTERNET_PERMISSION_REQUESTCODE);
@@ -59,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
         INTERNET_AVAILABLE = true;
     }
 
-
+    private void randomizeRequestCode() {
+        Random random = new Random();
+        INTERNET_PERMISSION_REQUESTCODE = random.nextInt(random.nextInt(1000));
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

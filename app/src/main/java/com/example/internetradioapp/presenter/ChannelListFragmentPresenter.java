@@ -22,17 +22,14 @@ import com.example.internetradioapp.model.Channel;
 import com.example.internetradioapp.model.ChannelRepository;
 import com.example.internetradioapp.model.RetrofitHelper;
 import com.example.internetradioapp.view.ChannelDetailFragment;
-import com.example.internetradioapp.view.ChannelListFragment;
 import com.example.internetradioapp.view.MainActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChannelListFragmentPresenter {
+public class ChannelListFragmentPresenter implements ChannelListPresenterInterface{
     Context context;
-
-    // for quick access
     List<Channel> channelList;
 
     public ChannelListFragmentPresenter(Context context) {
@@ -40,6 +37,7 @@ public class ChannelListFragmentPresenter {
 
     }
 
+    @Override
     public Channel searchChannel(String s){
         List<Channel> matchingChannel = getMatchingChannel(s);
         if (matchingChannel.size() == 1){
@@ -50,8 +48,29 @@ public class ChannelListFragmentPresenter {
         return null;
     }
 
+    @Override
     public void populateRecyclerView(RecyclerView recyclerView) {
         new SetUpChannelRepoAsyncTask(context, recyclerView).execute();
+    }
+
+    @Override
+    public void editRecyclerView(String s, RecyclerView recyclerView) {
+        List<Channel> matchingChannel = getMatchingChannel(s);
+        setUpRecyclerView(matchingChannel, recyclerView);
+    }
+
+    @Override
+    public Bundle createChannelBundle(Channel searchResult) {
+        Bundle bundle = new Bundle();
+        bundle.putString("title", searchResult.getTitle());
+        bundle.putString("dj", searchResult.getDj());
+        bundle.putString("description", searchResult.getDescription());
+        bundle.putString("djEmail", searchResult.getDjEmail());
+        bundle.putString("listeners", searchResult.getListeners());
+        bundle.putString("genre", searchResult.getGenre());
+        bundle.putString("thumbnailUrlLarge", searchResult.getThumbnailUrlLarge());
+        bundle.putString("previewUrl", searchResult.getPreviewUrl());
+        return bundle;
     }
 
     private void setUpRecyclerView(List<Channel> channelList, RecyclerView recyclerView){
@@ -63,14 +82,6 @@ public class ChannelListFragmentPresenter {
             Log.d(channel.getDj(), channel.getThumbnailUrlSmall());
         }
     }
-
-
-
-    public void editRecyclerView(String s, RecyclerView recyclerView) {
-        List<Channel> matchingChannel = getMatchingChannel(s);
-        setUpRecyclerView(matchingChannel, recyclerView);
-    }
-
 
     // if dj or title has substring then match
     private List<Channel> getMatchingChannel(String s){
@@ -85,6 +96,16 @@ public class ChannelListFragmentPresenter {
             }
         }
         return matchingChannel;
+    }
+
+    private void loadChannelRepo(ChannelRepository channelRepo) {
+        RetrofitHelper retrofitHelper = new RetrofitHelper(channelRepo);
+        if (MainActivity.INTERNET_AVAILABLE) {
+            retrofitHelper.makeRetrofitCall();
+        }
+        else{
+            Toast.makeText(context,"Internet Access Permission Denied", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private class SetUpChannelRepoAsyncTask extends AsyncTask<Void, Void, List<Channel>> {
@@ -110,16 +131,6 @@ public class ChannelListFragmentPresenter {
             super.onPostExecute(channelList);
             ChannelListFragmentPresenter.this.channelList = channelList;
             setUpRecyclerView(channelList, recyclerView);
-        }
-    }
-
-    private void loadChannelRepo(ChannelRepository channelRepo) {
-        RetrofitHelper retrofitHelper = new RetrofitHelper(channelRepo);
-        if (MainActivity.INTERNET_AVAILABLE) {
-            retrofitHelper.makeRetrofitCall();
-        }
-        else{
-            Toast.makeText(context,"Internet Access Permission Denied", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -150,7 +161,7 @@ public class ChannelListFragmentPresenter {
             holder.clChannel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Bundle bundle = ChannelListFragment.createChannelBundle(channel);
+                        Bundle bundle = createChannelBundle(channel);
                         Fragment fragment = new ChannelDetailFragment();
                         fragment.setArguments(bundle);
                         ((MainActivity)context).addFragment(false, fragment);

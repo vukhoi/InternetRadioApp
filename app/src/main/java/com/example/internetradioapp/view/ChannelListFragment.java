@@ -11,12 +11,13 @@ import android.view.ViewGroup;
 import com.example.internetradioapp.R;
 import com.example.internetradioapp.model.Channel;
 import com.example.internetradioapp.presenter.ChannelListFragmentPresenter;
+import com.example.internetradioapp.presenter.ChannelListPresenterInterface;
 
 
-public class ChannelListFragment extends Fragment {
+public class ChannelListFragment extends Fragment implements ChannelListFragmentInterface {
     RecyclerView recyclerView;
     SearchView searchView;
-    ChannelListFragmentPresenter presenter;
+    ChannelListPresenterInterface presenter;
 
 
     public ChannelListFragment() {
@@ -49,7 +50,6 @@ public class ChannelListFragment extends Fragment {
                 }
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String s) {
                 presenter.editRecyclerView(s, recyclerView);
@@ -58,23 +58,10 @@ public class ChannelListFragment extends Fragment {
         });
     }
 
-    public void addChannelDetailFragment(Channel searchResult) {
+    private void addChannelDetailFragment(Channel searchResult) {
         Fragment fragment = new ChannelDetailFragment();
-        Bundle bundle = createChannelBundle(searchResult);
+        Bundle bundle = presenter.createChannelBundle(searchResult);
         fragment.setArguments(bundle);
         ((MainActivity)getActivity()).addFragment(false, fragment);
-    }
-
-    public static Bundle createChannelBundle(Channel searchResult) {
-        Bundle bundle = new Bundle();
-        bundle.putString("title", searchResult.getTitle());
-        bundle.putString("dj", searchResult.getDj());
-        bundle.putString("description", searchResult.getDescription());
-        bundle.putString("djEmail", searchResult.getDjEmail());
-        bundle.putString("listeners", searchResult.getListeners());
-        bundle.putString("genre", searchResult.getGenre());
-        bundle.putString("thumbnailUrlLarge", searchResult.getThumbnailUrlLarge());
-        bundle.putString("previewUrl", searchResult.getPreviewUrl());
-        return bundle;
     }
 }

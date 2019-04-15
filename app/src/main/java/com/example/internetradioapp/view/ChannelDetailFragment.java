@@ -21,7 +21,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 
 
-public class ChannelDetailFragment extends Fragment {
+public class ChannelDetailFragment extends Fragment implements ChannelDetailFragmentInterface{
 
     View view;
     TextView tvTitle, tvDj, tvDescription, tvDjEmail, tvListeners, tvGenre;
@@ -30,9 +30,7 @@ public class ChannelDetailFragment extends Fragment {
     Bundle bundle;
 
     public ChannelDetailFragment() {
-
     }
-
 
 
     @Override
@@ -89,6 +87,8 @@ public class ChannelDetailFragment extends Fragment {
 
     }
 
+
+    // not used because unable setting up media player
     private void startMediaPlayer(MediaPlayer mediaPlayer){
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
